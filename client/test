@@ -1,0 +1,2 @@
+# flow
+./exec yarn test "$@"

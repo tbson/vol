@@ -1,0 +1,55 @@
+version: '2.1'
+
+networks:
+    proxy:
+        external:
+            name: common_proxy
+
+services:
+    vol_db:
+        container_name: vol_db
+        image: 'postgres:11.1'
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - '5433:5432'
+        volumes:
+            # - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+            - ./dbdata:/var/lib/postgresql/data/:delegated
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - proxy
+
+    vol_api:
+        container_name: vol_api
+        build:
+            context: ../api
+            dockerfile: ../docker/dockerfiles/api
+        volumes:
+            - ../api:/code:delegated
+        depends_on:
+            vol_db:
+                condition: service_healthy
+        networks:
+            - proxy
+        command: bash -c "mix ecto.migrate && mix phx.server"
+
+    vol_client:
+        container_name: vol_client
+        build:
+            context: ../client
+            dockerfile: ../docker/dockerfiles/client
+        command: yarn start
+        working_dir: /code
+        ports:
+            - '3000:3000'
+        volumes:
+            - ../client:/code:delegated
+            - /code/node_modules
+        networks:
+            - proxy

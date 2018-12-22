@@ -1,0 +1,9 @@
+*.bak
+tags
+.DS_Store
+docker/docker-compose.yml
+docker/dbdata/
+client/coverage/
+client/build/
+client/logfile
+client/yarn-error.log
