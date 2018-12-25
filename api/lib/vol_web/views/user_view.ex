@@ -11,9 +11,15 @@ defmodule VolWeb.UserView do
   end
 
   def render("user.json", %{user: user}) do
-    %{id: user.id,
+    %{
+      id: user.id,
       firstname: user.firstname,
       middlename: user.middlename,
-      lastname: user.lastname}
+      lastname: user.lastname
+    }
+  end
+
+  def render("jwt.json", %{jwt: jwt}) do
+    %{jwt: jwt}
   end
 end

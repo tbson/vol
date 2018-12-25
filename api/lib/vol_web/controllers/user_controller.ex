@@ -4,7 +4,17 @@ defmodule VolWeb.UserController do
   alias Vol.Accounts
   alias Vol.Accounts.User
 
-  action_fallback VolWeb.FallbackController
+  action_fallback(VolWeb.FallbackController)
+
+  def auth(conn, %{"email" => email, "password" => password}) do
+    case Accounts.token_auth(email, password) do
+      %{token: {:ok, token, _}, err: nil} ->
+        conn |> render("jwt.json", jwt: token)
+
+      %{err: err} ->
+        {:error, err}
+    end
+  end
 
   def index(conn, _params) do
     users = Accounts.list_users()
