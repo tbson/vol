@@ -14,5 +14,5 @@ config :vol, Vol.Repo,
   username: "postgres",
   password: "postgres",
   database: "vol_test",
-  hostname: "localhost",
+  hostname: "vol_db",
   pool: Ecto.Adapters.SQL.Sandbox

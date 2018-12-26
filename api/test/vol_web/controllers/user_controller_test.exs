@@ -4,10 +4,23 @@ defmodule VolWeb.UserControllerTest do
   alias Vol.Accounts
   alias Vol.Accounts.User
 
+  @credential_attrs %{
+    firstname: "test",
+    lastname: "test",
+    credential: %{
+      email: "test@test.com",
+      password: "test123"
+    }
+  }
+
   @create_attrs %{
     firstname: "some firstname",
     lastname: "some lastname",
-    middlename: "some middlename"
+    middlename: "some middlename",
+    credential: %{
+      email: "user1@test.com",
+      password: "test123"
+    }
   }
   @update_attrs %{
     firstname: "some updated firstname",
@@ -21,14 +34,31 @@ defmodule VolWeb.UserControllerTest do
     user
   end
 
+  def fixture(:credential) do
+    Accounts.create_user(@credential_attrs)
+    %{token: {:ok, token, _}} = Accounts.token_auth("test@test.com", "test123")
+    token
+  end
+
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    token = "Bearer " <> fixture(:credential)
+
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> put_req_header("authorization", token)
+
+    {:ok, conn: conn}
   end
 
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
+      result = json_response(conn, 200)["data"]
+      [auth_user | _] = result
+      assert Enum.count(result) == 1
+      assert auth_user["firstname"] === "test"
+      assert auth_user["lastname"] === "test"
     end
   end
 
@@ -83,9 +113,9 @@ defmodule VolWeb.UserControllerTest do
       conn = delete(conn, Routes.user_path(conn, :delete, user))
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
+      assert_error_sent(404, fn ->
         get(conn, Routes.user_path(conn, :show, user))
-      end
+      end)
     end
   end
 
