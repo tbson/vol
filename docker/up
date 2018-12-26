@@ -4,3 +4,5 @@ cp nginx.conf $NGINX/conf.d/vol.conf
 docker-compose -f $NGINX/docker-compose.yml restart
 
 docker-compose up -d
+
+docker-compose logs -f
