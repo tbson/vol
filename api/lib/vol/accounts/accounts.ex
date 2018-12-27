@@ -52,6 +52,10 @@ defmodule Vol.Accounts do
     end
   end
 
+  defp verify_user_password(%{user: nil} = auth_input) do
+    %{auth_input | err: :unauthorized}
+  end
+
   defp verify_user_password(%{password: password, user: user} = auth_input) do
     case checkpw(password, user.credential.password_hash) do
       true ->

@@ -2,7 +2,7 @@ defmodule Vol.AccountsTest do
   use Vol.DataCase
 
   alias Vol.Accounts
-  import Comeonin.Argon2, only: [checkpw: 2, dummy_checkpw: 0]
+  import Comeonin.Argon2, only: [checkpw: 2]
 
   describe "users" do
     alias Vol.Accounts.User

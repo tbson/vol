@@ -22,6 +22,22 @@ defmodule VolWeb.UserControllerTest do
       password: "test123"
     }
   }
+
+  @valid_credential %{
+    email: "test@test.com",
+    password: "test123"
+  }
+
+  @invalid_credential_email %{
+    email: "test@test.com1",
+    password: "test123"
+  }
+
+  @invalid_credential_password %{
+    email: "test@test.com",
+    password: "test1231"
+  }
+
   @update_attrs %{
     firstname: "some updated firstname",
     lastname: "some updated lastname",
@@ -49,6 +65,23 @@ defmodule VolWeb.UserControllerTest do
       |> put_req_header("authorization", token)
 
     {:ok, conn: conn}
+  end
+
+  describe "authenticate" do
+    test "success", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :auth), @valid_credential)
+      assert %{"jwt" => _} = json_response(conn, 200)
+    end
+
+    test "fail email", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :auth), @invalid_credential_email)
+      assert %{"error" => "Login error"} = json_response(conn, 401)
+    end
+
+    test "fail password", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :auth), @invalid_credential_password)
+      assert %{"error" => "Login error"} = json_response(conn, 401)
+    end
   end
 
   describe "index" do
