@@ -50,6 +50,43 @@ defmodule Vol.AccountsTest do
       assert Enum.map(Accounts.list_users(), &user_filter(&1)) == users
     end
 
+    test "get_user_by_email" do
+      user = user_fixture()
+      auth_input = %{email: user.credential.email, password: nil, user: nil, token: nil, err: nil}
+
+      auth_input_fail = %{
+        email: "not@exist.email",
+        password: nil,
+        user: nil,
+        token: nil,
+        err: nil
+      }
+
+      assert %{user: user} = Accounts.get_user_by_email(auth_input)
+      assert %{err: :unauthorized} = Accounts.get_user_by_email(auth_input_fail)
+    end
+
+    test "verify_user_password" do
+      user = user_fixture()
+      auth_input = %{email: user.credential.email, password: nil, user: nil, token: nil, err: nil}
+      auth_input_right_pass = %{auth_input | user: user, password: user.credential.password}
+      auth_input_wrong_pass = %{auth_input | user: user, password: "wrong password"}
+
+      assert %{err: :unauthorized} = Accounts.verify_user_password(auth_input)
+      assert ^auth_input_right_pass = Accounts.verify_user_password(auth_input_right_pass)
+      assert %{err: :unauthorized} = Accounts.verify_user_password(auth_input_wrong_pass)
+    end
+
+    test "get_token" do
+      user = user_fixture()
+      auth_input = %{email: user.credential.email, password: nil, user: nil, token: nil, err: nil}
+      auth_input_with_user = %{auth_input | user: user}
+
+      assert %{err: :unauthorized, token: nil} = Accounts.get_token(auth_input)
+      assert %{err: nil, token: token} = Accounts.get_token(auth_input_with_user)
+      assert token != nil
+    end
+
     test "get_user!/1 returns the user with given id" do
       user = user_fixture()
       assert user_filter(Accounts.get_user!(user.id)) == user_filter(user)

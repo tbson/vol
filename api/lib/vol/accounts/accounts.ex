@@ -39,24 +39,24 @@ defmodule Vol.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
-  defp get_user_by_email(%{email: email} = auth_input) do
+  def get_user_by_email(%{email: email} = auth_input) do
     case from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
          |> Repo.one()
          |> Repo.preload(:credential) do
-      user ->
-        %{auth_input | user: user}
-
       nil ->
         dummy_checkpw()
         %{auth_input | err: :unauthorized}
+
+      user ->
+        %{auth_input | user: user}
     end
   end
 
-  defp verify_user_password(%{user: nil} = auth_input) do
+  def verify_user_password(%{user: nil} = auth_input) do
     %{auth_input | err: :unauthorized}
   end
 
-  defp verify_user_password(%{password: password, user: user} = auth_input) do
+  def verify_user_password(%{password: password, user: user} = auth_input) do
     case checkpw(password, user.credential.password_hash) do
       true ->
         auth_input
