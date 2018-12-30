@@ -1,14 +1,24 @@
 // @flow
 import * as React from 'react';
-import NavWrapper from '../nav_wrapper';
+// $FlowFixMe: do not complain about importing node_modules
+import {Link} from 'react-router-dom';
 
 type Props = {};
 class NotMatch extends React.Component<Props> {
     render() {
         return (
-            <NavWrapper>
-                <h1>Page not found</h1>
-            </NavWrapper>
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-8 offset-md-2">
+                        <div className="jumbotron">
+                            <h1>Page not found</h1>
+                            <Link to="/" className="btn btn-primary">
+                                Back
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     }
 }
