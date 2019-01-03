@@ -3,6 +3,7 @@ defmodule Vol.Accounts.User do
   import Ecto.Changeset
   alias Vol.Accounts.Credential
 
+  @derive {Jason.Encoder, only: [:id, :firstname, :middlename, :lastname]}
   schema "users" do
     field(:firstname, :string)
     field(:lastname, :string)

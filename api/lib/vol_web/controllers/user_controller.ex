@@ -8,8 +8,12 @@ defmodule VolWeb.UserController do
 
   def auth(conn, %{"email" => email, "password" => password}) do
     case Accounts.token_auth(email, password) do
-      %{token: {:ok, token, _}, err: nil} ->
-        conn |> render("jwt.json", jwt: token)
+      %{token: {:ok, token, _}, user: user, err: nil} ->
+        conn
+        |> render("jwt.json",
+          jwt: token,
+          user: user
+        )
 
       %{err: err} ->
         {:error, err}
