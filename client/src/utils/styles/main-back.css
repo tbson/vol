@@ -1,3 +1,7 @@
+html, .btn {
+    font-size: 14px;
+}
+
 /*
 input:invalid {
     border-color: #dc3545;

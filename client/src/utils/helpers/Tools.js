@@ -129,12 +129,7 @@ export default class Tools {
 
     static setStorage(key: string, value: any): void {
         try {
-            let newValue = value;
-            if (key === 'authData') {
-                newValue = {...this.getStorageObj(key), ...value};
-            }
-            newValue = JSON.stringify(newValue);
-            localStorage.setItem(LOCAL_STORAGE_PREFIX + '_' + key, newValue);
+            localStorage.setItem(LOCAL_STORAGE_PREFIX + '_' + key, JSON.stringify(value));
         } catch (error) {
             console.log(error);
         }

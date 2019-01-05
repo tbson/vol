@@ -1,47 +1,37 @@
 // @flow
 import * as React from 'react';
-import CustomModal from 'src/utils/components/CustomModal';
+import CustomModal from 'src/utils/components/modal/CustomModal';
 
 type Props = {
     open: boolean,
     title: string,
     size: string,
     heading: boolean,
-    handleClose: Function,
+    close: Function,
     children: React.Node
 };
 
-type States = {
-    modalTitle: string
-};
-
-export default class DefaultModal extends React.Component<Props, States> {
-    static defaultProps = {
-        open: false,
-        size: 'md',
-        heading: true,
-        title: ''
-    };
-
-    componentDidMount() {
-        window.document.addEventListener('keydown', event => {
+export class Service {
+    static handleEsc(open: boolean, callback: Function) {
+        return (event: Object) => {
             event = event || window.event;
-            if (event.keyCode == 27 && this.props.open) {
-                this.props.handleClose();
-            }
-        });
+            event.keyCode == 27 && open && callback();
+        };
     }
 
-    render() {
-        if (!this.props.open) return null;
-        const {handleClose, children, title, size, heading} = this.props;
-        return (
-            <CustomModal open={true} close={handleClose} title={title} size={size} heading={heading}>
-                <div className="modal-inner">
-                    {/* $FlowFixMe: No Type for cloneElement */}
-                    {React.cloneElement(children, { handleClose })}
-                </div>
-            </CustomModal>
-        );
+    static listentEsc(open: boolean, callback: Function) {
+        open && window.document.addEventListener('keydown', Service.handleEsc(open, callback), {once: true});
     }
 }
+
+export default ({open = false, size = 'md', heading = true, title = '', close, children}: Props) => {
+    Service.listentEsc(open, close);
+    return open ? (
+        <CustomModal open={true} close={close} title={title} size={size} heading={heading}>
+            <div className="modal-inner">
+                {/* $FlowFixMe: No Type for cloneElement */}
+                {React.cloneElement(children, {close})}
+            </div>
+        </CustomModal>
+    ) : null;
+};
