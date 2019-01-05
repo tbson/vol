@@ -23,6 +23,6 @@ defmodule VolWeb.FallbackController do
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
-    |> json(%{error: "Login error"})
+    |> json(%{error: "Authenticate fail"})
   end
 end

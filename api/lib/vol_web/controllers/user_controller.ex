@@ -11,7 +11,7 @@ defmodule VolWeb.UserController do
       %{token: {:ok, token, _}, user: user, err: nil} ->
         conn
         |> render("jwt.json",
-          jwt: token,
+          token: token,
           user: user
         )
 

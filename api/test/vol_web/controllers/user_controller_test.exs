@@ -70,7 +70,7 @@ defmodule VolWeb.UserControllerTest do
   describe "authenticate" do
     test "success", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :auth), @valid_credential)
-      assert %{"jwt" => _} = json_response(conn, 200)
+      assert %{"token" => _, "user" => _} = json_response(conn, 200)
     end
 
     test "fail email", %{conn: conn} do

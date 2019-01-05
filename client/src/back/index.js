@@ -22,6 +22,7 @@ import Tools from 'src/utils/helpers/Tools';
 
 import Trans from 'src/utils/helpers/Trans';
 import translations from 'src/utils/translations.json';
+import Login from 'src/back/auth/Login';
 
 type Props = {};
 
@@ -38,6 +39,7 @@ class App extends React.Component<Props> {
                 <ToastContainer autoClose={5000} />
                 <Switch>
                     <Route exact path="/" component={Back} />
+                    <Route exact path="/login" component={Login} />
                     <Route component={NotMatch} />
                 </Switch>
             </div>

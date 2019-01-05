@@ -19,7 +19,7 @@ defmodule VolWeb.UserView do
     }
   end
 
-  def render("jwt.json", %{jwt: jwt, user: user}) do
-    %{jwt: jwt, user: user}
+  def render("jwt.json", %{token: token, user: user}) do
+    %{token: token, user: user}
   end
 end

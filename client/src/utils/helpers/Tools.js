@@ -5,6 +5,8 @@ import Fingerprint2 from 'fingerprintjs2';
 // $FlowFixMe: do not complain about importing node_modules
 import kebabCase from 'lodash/kebabCase';
 // $FlowFixMe: do not complain about importing node_modules
+import cloneDeep from 'lodash/cloneDeep';
+// $FlowFixMe: do not complain about importing node_modules
 import {toast} from 'react-toastify';
 // $FlowFixMe: do not complain about importing node_modules
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,6 +33,11 @@ type ApiUrl = {
 };
 
 type RawApiUrls = Array<ApiUrl>;
+
+type Payload = {
+    data: string | FormData,
+    contentType: string
+};
 
 export type GetListResponseData = {
     links: {
@@ -201,27 +208,34 @@ export default class Tools {
         return Fingerprint2.x64hash128(values.join(''), 31);
     }
 
-    static payloadFromObject(data: Object = {}): Object {
+    static fileInObject(data: Object) {
+        return !!Object.values(data).filter(item => item instanceof Blob).length;
+    }
+
+    static getJsonPayload(data: Object): Payload {
+        return {
+            data: JSON.stringify(data),
+            contentType: 'application/json'
+        };
+    }
+
+    static getFormDataPayload(data: Object): Payload {
+        let formData = new FormData();
+        for (let key in data) {
+            const value = data[key];
+            formData.set(key, value);
+        }
+        return {
+            data: formData,
+            contentType: 'application/x-www-form-urlencoded'
+        };
+    }
+
+    static payloadFromObject(data: Object = {}): Payload {
         try {
-            if (Object.values(data).filter(item => item instanceof Blob).length) {
-                let formData = new FormData();
-                for (let key in data) {
-                    const value = data[key];
-                    formData.set(key, value);
-                }
-                return {
-                    data: formData,
-                    contentType: null
-                };
-            } else {
-                return {
-                    data: JSON.stringify(data),
-                    contentType: 'application/json'
-                };
-            }
+            return Tools.fileInObject(data) ? Tools.getFormDataPayload(data) : Tools.getJsonPayload(data);
         } catch (error) {
-            console.error(error);
-            return {};
+            return Tools.getJsonPayload({});
         }
     }
 
@@ -298,7 +312,99 @@ export default class Tools {
         this.emitter.emit('TOGGLE_SPINNER', spinning);
     }
 
-    static async apiCall(
+    static defaultRequestConfig(method: string): Object {
+        const token = Tools.getToken();
+        const config = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token ?? `JWT ${token}`
+            },
+            mode: 'cors',
+            credentials: 'same-origin'
+        };
+
+        return config;
+    }
+
+    static preparePayload(data: Object, method: string): Object {
+        const config = Tools.defaultRequestConfig(method);
+        const payload = Tools.payloadFromObject(data);
+        config.body = payload.data;
+        config.headers.contentType = payload.contentType;
+
+        return {payload, config};
+    }
+
+    static isUsePayload(method: string): boolean {
+        return ['POST', 'PUT'].includes(method);
+    }
+
+    static async getJsonResponse(response: Object): Object {
+        let data = {};
+        try {
+            if (response.status !== 204) {
+                data = await response.json();
+            }
+            if (response.status === 502) {
+                data = {error: 'Internal server error'};
+            }
+        } catch (error) {
+            console.log(error);
+            data = {error: 'Internal server error'};
+        }
+        return data;
+    }
+
+    static isSuscessResponse(status: number): boolean {
+        return ![200, 201, 204].includes(status) ? false : true;
+    }
+
+    static defaultErrorResponse(err: Object): Object {
+        return {
+            status: 400,
+            ok: false,
+            data: err
+        };
+    }
+
+    static response(data: Object, status: number): Object {
+        return {
+            status,
+            ok: Tools.isSuscessResponse(status),
+            data
+        };
+    }
+
+    static async apiCall(url: string, data: Object = {}, method: string = 'GET', usingLoading: boolean = true) {
+        usingLoading && this.toggleGlobalLoading();
+
+        let result;
+        try {
+            const usePayload = Tools.isUsePayload(method);
+            const preparePayload = Tools.preparePayload(data, method);
+
+            const config = usePayload ? preparePayload.config : Tools.defaultRequestConfig(method);
+
+            if (!usePayload) {
+                url += '?' + this.urlDataEncode(data);
+            }
+
+            const response = await fetch(url, config);
+            const status = response.status;
+            const json = await Tools.getJsonResponse(response);
+
+            result = Tools.response(json, status);
+        } catch (err) {
+            result = Tools.defaultErrorResponse(err);
+        }
+
+        usingLoading && this.toggleGlobalLoading(false);
+
+        return result;
+    }
+
+    static async apiCallOld(
         url: string,
         method: string = 'GET',
         payload: Object = {},
