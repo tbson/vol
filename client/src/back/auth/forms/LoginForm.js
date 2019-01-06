@@ -4,13 +4,12 @@ import Tools from 'src/utils/helpers/Tools';
 import TextInput from 'src/utils/components/input/TextInput';
 
 type Props = {
-    children?: React.Node,
-    submitTitle?: string,
     handleSubmit: Function,
-    formId: string
+    formId: string,
+    children?: React.Node,
+    submitTitle: string
 };
-
-export default ({children, submitTitle = 'Submit', handleSubmit, formId}: Props) => {
+export default ({handleSubmit, formId, children, submitTitle = 'Submit'}: Props) => {
     const name = 'login';
     const id = Tools.getFieldId.bind(undefined, name);
 
@@ -27,7 +26,7 @@ export default ({children, submitTitle = 'Submit', handleSubmit, formId}: Props)
 
 type ButtonBarProps = {
     children?: React.Node,
-    submitTitle?: string
+    submitTitle: string
 };
 export const ButtonsBar = ({children, submitTitle}: ButtonBarProps) => {
     return (

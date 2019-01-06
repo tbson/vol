@@ -58,7 +58,15 @@ export default class Login extends React.Component<Props, States> {
                     </div>
                 </div>
                 <DefaultModal open={resetPwdModal} title="Test" close={() => this.toggleModal.bind(this)(false)}>
-                    <ResetPwdForm />
+                    <ResetPwdForm>
+                        <button
+                            type="button"
+                            className="btn btn-warning"
+                            onClick={() => this.toggleModal.bind(this)(false)}>
+                            <span className="fas fa-times" />
+                            Cancel
+                        </button>
+                    </ResetPwdForm>
                 </DefaultModal>
             </>
         );
