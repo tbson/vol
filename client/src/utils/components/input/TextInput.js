@@ -9,9 +9,9 @@ type Props = {
     errorMessage: string,
     value?: string,
     placeholder?: string,
-    required?: boolean,
+    required: boolean,
     disabled?: boolean,
-    autoFocus?: boolean,
+    autoFocus: boolean,
     onChange?: Function
 };
 
@@ -35,7 +35,7 @@ export default class Input extends React.Component<Props> {
             defaultValue: value,
             placeholder: placeholder || `${label}...`
         };
-        if (typeof(onChange) === 'function') {
+        if (typeof onChange === 'function') {
             inputProps.onChange = onChange;
         }
 

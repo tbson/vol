@@ -1,5 +1,7 @@
 // @flow
 import * as React from 'react';
+import Tools from 'src/utils/helpers/Tools';
+import TextInput from 'src/utils/components/input/TextInput';
 
 type Props = {
     children?: React.Node,
@@ -8,59 +10,35 @@ type Props = {
     formId: string
 };
 
-export default (props: Props) => {
-    const submitTitle = props.submitTitle ?? 'Submit';
-    
+export default ({children, submitTitle = 'Submit', handleSubmit, formId}: Props) => {
+    const name = 'login';
+    const id = Tools.getFieldId.bind(undefined, name);
 
     return (
-        <form id={props.formId} onSubmit={props.handleSubmit}>
-            <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <div className="input-group">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text">
-                            <i className="fas fa-user" />
-                        </span>
-                    </div>
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        className="form-control"
-                        required
-                        placeholder="Email..."
-                    />
-                </div>
-            </div>
+        <form name={name} onSubmit={handleSubmit}>
+            <TextInput id={id('email')} type="email" label="Email" required={true} autoFocus={true} />
 
-            <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <div className="input-group">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text">
-                            <i className="fas fa-key" />
-                        </span>
-                    </div>
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        className="form-control"
-                        required
-                        placeholder="Password..."
-                    />
-                </div>
-            </div>
+            <TextInput id={id('password')} type="password" label="Password" required={true} />
 
-            <div className="right">
-                {props.children}
-                &nbsp;&nbsp;
+            <ButtonsBar children={children} submitTitle={submitTitle} />
+        </form>
+    );
+};
+
+type ButtonBarProps = {
+    children?: React.Node,
+    submitTitle?: string
+};
+export const ButtonsBar = ({children, submitTitle}: ButtonBarProps) => {
+    return (
+        <div className="row">
+            <div className="col">{children}</div>
+            <div className="col right">
                 <button type="submit" className="btn btn-primary">
                     <span className="fas fa-check" />
-                    &nbsp;
                     {submitTitle}
                 </button>
             </div>
-        </form>
+        </div>
     );
 };
