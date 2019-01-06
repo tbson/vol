@@ -5,11 +5,10 @@ import TextInput from 'src/utils/components/input/TextInput';
 
 type Props = {
     handleSubmit: Function,
-    formId: string,
     children?: React.Node,
     submitTitle: string
 };
-export default ({handleSubmit, formId, children, submitTitle = 'Submit'}: Props) => {
+export default ({handleSubmit, children, submitTitle = 'Submit'}: Props) => {
     const name = 'login';
     const id = Tools.getFieldId.bind(undefined, name);
 

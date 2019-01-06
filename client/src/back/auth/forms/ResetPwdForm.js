@@ -5,11 +5,10 @@ import TextInput from 'src/utils/components/input/TextInput';
 
 type Props = {
     handleSubmit: Function,
-    formId: string,
     children?: React.Node,
-    submitTitle: string
+    submitTitle?: string
 };
-export default ({handleSubmit, formId, children, submitTitle = 'Reset password'}: Props) => {
+export default ({handleSubmit, children, submitTitle = 'Reset password'}: Props) => {
     const name = 'reset-password';
     const id = Tools.getFieldId.bind(undefined, name);
 
@@ -18,7 +17,7 @@ export default ({handleSubmit, formId, children, submitTitle = 'Reset password'}
             <TextInput id={id('email')} type="email" label="Email" required={true} autoFocus={true} />
 
             <TextInput id={id('password')} type="password" label="Password" required={true} />
-            <TextInput id={id('password-again')} type="password" label="Password" required={true} />
+            <TextInput id={id('password-again')} type="password" label="Password again" required={true} />
 
             <ButtonsBar children={children} submitTitle={submitTitle} />
         </form>
