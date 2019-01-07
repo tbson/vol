@@ -34,6 +34,11 @@ type ApiUrl = {
 
 type RawApiUrls = Array<ApiUrl>;
 
+export type FormState = {
+    data: Object,
+    errors: Object
+};
+
 type Payload = {
     data: string | FormData,
     contentType: string

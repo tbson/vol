@@ -3,6 +3,9 @@
 .*/node_modules/rc-editor-core/.*
 .*/node_modules/config-chain/.*
 
+[options]
+esproposal.optional_chaining=enable
+
 [include]
 
 [libs]

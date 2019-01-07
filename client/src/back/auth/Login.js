@@ -6,13 +6,14 @@ import LoginForm from './forms/LoginForm';
 import Tools from 'src/utils/helpers/Tools';
 import DefaultModal from 'src/utils/components/modal/DefaultModal';
 import ResetPwdForm from './forms/ResetPwdForm';
+import type {FormState} from 'src/utils/helpers/Tools';
 
 type Props = {
     history: Object
 };
 
 type States = {
-    loginFail: boolean,
+    loginFormState: FormState,
     resetPwdModal: boolean
 };
 
@@ -27,7 +28,10 @@ export class Service {
 export class Login extends React.Component<Props, States> {
     navigateTo: Function;
     state = {
-        loginFail: false,
+        loginFormState: {
+            data: {},
+            errors: {}
+        },
         resetPwdModal: false
     };
 
@@ -50,7 +54,7 @@ export class Login extends React.Component<Props, States> {
             Tools.setStorage('authData', resp.data);
             this.navigateTo();
         } else {
-            this.setState({loginFail: !resp.ok});
+            this.setState({loginFormState: {...this.state.loginFormState, errors: resp.data}});
         }
     }
 
@@ -59,7 +63,7 @@ export class Login extends React.Component<Props, States> {
     }
 
     render() {
-        const {resetPwdModal, loginFail} = this.state;
+        const {resetPwdModal, loginFormState} = this.state;
         return (
             <>
                 <div className="container">
@@ -68,14 +72,14 @@ export class Login extends React.Component<Props, States> {
                             <div className="jumbotron">
                                 <h2 className="center">LOGIN</h2>
                                 <LoginForm
-                                    formId="loginForm"
+                                    formId="loginFormState"
                                     submitTitle="Login"
+                                    state={loginFormState}
                                     handleSubmit={this.handleSubmit.bind(this)}>
                                     <span className="pointer link" onClick={this.toggleModal.bind(this)}>
                                         Reset password
                                     </span>
                                 </LoginForm>
-                                <ErrorMessage loginFail={loginFail} />
                             </div>
                         </div>
                     </div>
@@ -99,14 +103,3 @@ export class Login extends React.Component<Props, States> {
     }
 }
 export default withRouter(Login);
-
-type ErrorMessageProps = {
-    loginFail: boolean
-};
-
-export const ErrorMessage = ({loginFail}: ErrorMessageProps) =>
-    loginFail ? (
-        <div className="alert alert-danger" role="alert" style={{marginTop: 16}}>
-            Wrong username or password!
-        </div>
-    ) : null;
