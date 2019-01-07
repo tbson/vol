@@ -75,12 +75,12 @@ defmodule VolWeb.UserControllerTest do
 
     test "fail email", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :auth), @invalid_credential_email)
-      assert %{"error" => "Login error"} = json_response(conn, 401)
+      assert %{"errors" => %{"common" => ["Authenticate fail"]}} = json_response(conn, 401)
     end
 
     test "fail password", %{conn: conn} do
       conn = post(conn, Routes.user_path(conn, :auth), @invalid_credential_password)
-      assert %{"error" => "Login error"} = json_response(conn, 401)
+      assert %{"errors" => %{"common" => ["Authenticate fail"]}} = json_response(conn, 401)
     end
   end
 
