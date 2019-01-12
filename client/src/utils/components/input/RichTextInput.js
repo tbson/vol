@@ -47,7 +47,7 @@ class RichTextInput extends React.Component<Props, States> {
                 parent_uuid: this.props.parentUUID,
                 richtext_image: true
             };
-            const result = await Tools.apiCall(apiUrls.crud, 'POST', params);
+            const result = await Tools.apiCall(apiUrls.crud, params, 'POST');
             if (result.success) {
                 const url = result.data.attachment.replace(/^.*\/\/[^\/]+/, '');
                 insertImage(url, image => {

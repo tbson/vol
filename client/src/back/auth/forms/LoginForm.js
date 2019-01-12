@@ -16,7 +16,7 @@ export default ({handleSubmit, children, state, submitTitle = 'Submit'}: Props) 
     const name = 'login';
     const id = Tools.getFieldId.bind(undefined, name);
 
-    const errorMessages = (name: string): string => state.errors[name] || [];
+    const errorMessages = (name: string): Array<string> => state.errors[name] || [];
 
     return (
         <form name={name} onSubmit={handleSubmit}>

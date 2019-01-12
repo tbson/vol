@@ -588,7 +588,7 @@ export default class Tools {
     }
 
     static async getItem(url: string, id: number): GetItemResponse {
-        const result = await this.apiCall(url + id.toString(), 'GET');
+        const result = await this.apiCall(url + id.toString());
         if (result.success) {
             return result.data;
         }
@@ -596,7 +596,7 @@ export default class Tools {
     }
 
     static async getList(url: string, params: Object = {}): GetListResponse {
-        const result = await this.apiCall(url, 'GET', params);
+        const result = await this.apiCall(url, params);
         if (result.success) {
             result.data.items = result.data.items.map(item => {
                 item.checked = false;
@@ -610,7 +610,7 @@ export default class Tools {
 
     static async handleAdd(url: string, params: Object): Promise<Object> {
         try {
-            return await this.apiCall(url, 'POST', params);
+            return await this.apiCall(url, params, 'POST');
         } catch (error) {
             return this.commonErrorResponse(error);
         }
@@ -619,7 +619,7 @@ export default class Tools {
     static async handleEdit(url: string, params: Object): Promise<Object> {
         try {
             const id = String(params.id);
-            return await this.apiCall(url, 'PUT', params);
+            return await this.apiCall(url, params, 'PUT');
         } catch (error) {
             return this.commonErrorResponse(error);
         }
@@ -659,7 +659,7 @@ export default class Tools {
         }
         const decide = window.confirm(message);
         if (!decide) return null;
-        const result = await Tools.apiCall(url + (listId.length === 1 ? ids : '?ids=' + ids), 'DELETE');
+        const result = await Tools.apiCall(url + (listId.length === 1 ? ids : '?ids=' + ids), {}, 'DELETE');
         return result.success ? listId.map(item => parseInt(item)) : null;
     }
 
@@ -729,16 +729,16 @@ export default class Tools {
         };
     }
 
-    static meanfulErrorItem(input) {
+    static meanfulErrorItem(input: any): boolean {
         return input && (Array.isArray(input) || ['string', 'number'].includes(typeof input));
     }
 
-    static standarizeErrorItem(input) {
+    static standarizeErrorItem(input: any): Array<any> {
         if (Array.isArray(input)) return input;
         return [input];
     }
 
-    static parseErrorResponse(errors, result = {}) {
+    static parseErrorResponse(errors: Object, result: Object = {}): Object {
         if (Tools.isEmpty(errors)) return result;
         for (let key in errors) {
             const value = errors[key];
