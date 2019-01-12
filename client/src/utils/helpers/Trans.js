@@ -12,7 +12,7 @@ export default class Trans {
     static initTranslations(translationSource: Object) {
         translations = translationSource;
         defaultLang = translations.defaultLang;
-        this.setLang(Tools.getStorageStr('lang') || defaultLang);
+        Trans.setLang(Tools.getStorageStr('lang') || defaultLang);
     }
 
     static getDefaultLang() {
@@ -26,7 +26,7 @@ export default class Trans {
     static getLangs(): Array<string> {
         const {translated} = translations;
         if (!translated.length) return [];
-        return Object.keys(translated[0]).filter(lang => lang != this.getUsingLang());
+        return Object.keys(translated[0]).filter(lang => lang != Trans.getUsingLang());
     }
 
     static setLang(lang: string) {
@@ -45,7 +45,7 @@ export default class Trans {
 
     // $FlowFixMe: do not complain about missing arguments annotation
     static _(key: string, ...values): string {
-        let trans = this.getUsingLang() == defaultLang ? key : langDict[key];
+        let trans = Trans.getUsingLang() == defaultLang ? key : langDict[key];
         if (!trans) return key;
         for (let value of values) {
             trans = trans.replace(delimiter, value);
