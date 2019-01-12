@@ -7,6 +7,8 @@ import kebabCase from 'lodash/kebabCase';
 // $FlowFixMe: do not complain about importing node_modules
 import cloneDeep from 'lodash/cloneDeep';
 // $FlowFixMe: do not complain about importing node_modules
+import isPlainObject from 'lodash/isPlainObject';
+// $FlowFixMe: do not complain about importing node_modules
 import {toast} from 'react-toastify';
 // $FlowFixMe: do not complain about importing node_modules
 import 'react-toastify/dist/ReactToastify.css';
@@ -725,5 +727,24 @@ export default class Tools {
             },
             items: items || []
         };
+    }
+
+    static meanfulErrorItem(input) {
+        return input && (Array.isArray(input) || ['string', 'number'].includes(typeof input));
+    }
+
+    static standarizeErrorItem(input) {
+        if (Array.isArray(input)) return input;
+        return [input];
+    }
+
+    static parseErrorResponse(errors, result = {}) {
+        if (Tools.isEmpty(errors)) return result;
+        for (let key in errors) {
+            const value = errors[key];
+            if (Tools.meanfulErrorItem(value)) result[key] = Tools.standarizeErrorItem(value);
+            if (isPlainObject(value)) result = Tools.parseErrorResponse(value, result);
+        }
+        return result;
     }
 }

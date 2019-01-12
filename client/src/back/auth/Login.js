@@ -54,7 +54,8 @@ export class Login extends React.Component<Props, States> {
             Tools.setStorage('authData', resp.data);
             this.navigateTo();
         } else {
-            this.setState({loginFormState: {...this.state.loginFormState, errors: resp.data}});
+            const {errors} =  resp.data;
+            this.setState({loginFormState: {...this.state.loginFormState, errors}});
         }
     }
 
@@ -72,7 +73,7 @@ export class Login extends React.Component<Props, States> {
                             <div className="jumbotron">
                                 <h2 className="center">LOGIN</h2>
                                 <LoginForm
-                                    formId="loginFormState"
+                                    formId="loginForm"
                                     submitTitle="Login"
                                     state={loginFormState}
                                     handleSubmit={this.handleSubmit.bind(this)}>

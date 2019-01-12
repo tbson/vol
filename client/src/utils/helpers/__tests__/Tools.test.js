@@ -212,7 +212,7 @@ test('payloadFromObject', () => {
     eput = input;
     expect(output).toEqual({
         data: eput,
-        contentType: null
+        contentType: 'application/x-www-form-urlencoded'
     });
 });
 
@@ -971,4 +971,58 @@ test('getListItemToResponseData', () => {
         items: input
     };
     expect(output).toEqual(eput);
+});
+
+describe('parseErrorResponse', () => {
+    test('empty errors', () => {
+        const input = {};
+        const eput = {};
+        const output = Tools.parseErrorResponse(input);
+        expect(output).toEqual(eput);
+    });
+
+    test('only common error', () => {
+        const input = {
+            common: ['common error 1', 'common error 2']
+        };
+        const eput = {
+            common: ['common error 1', 'common error 2']
+        };
+        const output = Tools.parseErrorResponse(input);
+        expect(output).toEqual(eput);
+    });
+
+    test('only detail', () => {
+        const input = {
+            credential: {
+                email: ['has already been taken', 'bad email']
+            },
+            agree: ['missing agree']
+        };
+        const eput = {
+            email: ['has already been taken', 'bad email'],
+            agree: ['missing agree']
+        };
+        const output = Tools.parseErrorResponse(input);
+        expect(output).toEqual(eput);
+    });
+
+    test('mix', () => {
+        const input = {
+            common: ['common error 1', 'common error 2'],
+            credential: {
+                email: ['has already been taken', 'bad email']
+            },
+            agree: 'missing agree',
+            blank_value: '',
+            null_value: null
+        };
+        const eput = {
+            common: ['common error 1', 'common error 2'],
+            email: ['has already been taken', 'bad email'],
+            agree: ['missing agree']
+        };
+        const output = Tools.parseErrorResponse(input);
+        expect(output).toEqual(eput);
+    });
 });
