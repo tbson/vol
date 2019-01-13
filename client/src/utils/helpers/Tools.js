@@ -178,7 +178,7 @@ export default class Tools {
     }
 
     static getToken(): string {
-        const token = this.getStorageObj('authData').token;
+        const token = this.getStorageObj('auth').token;
         return token ? token : '';
     }
 
@@ -292,7 +292,7 @@ export default class Tools {
     }
 
     static logout(history: Object) {
-        this.removeStorage('authData');
+        this.removeStorage('auth');
         this.navigateTo(history, 'login');
     }
 
@@ -481,7 +481,7 @@ export default class Tools {
             }
             */
             if (result.status === 401) {
-                this.removeStorage('authData');
+                this.removeStorage('auth');
                 window.location = BASE_URL + 'login';
             }
             return result;
@@ -746,5 +746,13 @@ export default class Tools {
             if (isPlainObject(value)) result = Tools.parseErrorResponse(value, result);
         }
         return result;
+    }
+
+    static toggleState(open: ?boolean = null, key: string = 'modal') {
+        return (state: Object) => ({[key]: open === null ? !state[key] : !!open});
+    }
+
+    static setFormErrors(errors: Object, key: string = 'formState') {
+        return (state: Object) => ({[key]: {...state[key], errors}});
     }
 }

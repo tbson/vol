@@ -154,11 +154,11 @@ test('removeStorage', () => {
 });
 
 test('getToken', () => {
-    Tools.setStorage('authData', {token: 'token'});
+    Tools.setStorage('auth', {token: 'token'});
     let output = Tools.getToken();
     expect(output).toEqual('token');
 
-    Tools.removeStorage('authData');
+    Tools.removeStorage('auth');
     output = Tools.getToken();
     expect(output).toEqual('');
 });

@@ -13,8 +13,8 @@ type Props = {
 };
 
 type States = {
-    loginFormState: FormState,
-    resetPwdModal: boolean
+    formState: FormState,
+    modal: boolean
 };
 
 export class Service {
@@ -28,11 +28,11 @@ export class Service {
 export class Login extends React.Component<Props, States> {
     navigateTo: Function;
     state = {
-        loginFormState: {
+        formState: {
             data: {},
             errors: {}
         },
-        resetPwdModal: false
+        modal: false
     };
 
     constructor(props: Props) {
@@ -41,30 +41,26 @@ export class Login extends React.Component<Props, States> {
     }
 
     componentDidMount() {
-        const authData = Tools.getStorageObj('authData');
-        if (authData.token) {
-            this.navigateTo();
-        }
+        Tools.getToken() && this.navigateTo();
     }
 
     async handleSubmit(event: Object) {
         event.preventDefault();
         const resp = await Service.handleSubmitLogin(event);
+
         if (resp.ok) {
-            Tools.setStorage('authData', resp.data);
-            this.navigateTo();
+            Tools.setStorage('auth', resp.data) || this.navigateTo();
         } else {
-            const {errors} =  resp.data;
-            this.setState({loginFormState: {...this.state.loginFormState, errors}});
+            this.setState(Tools.setFormErrors(resp.data.errors));
         }
     }
 
     toggleModal(open: ?boolean = null) {
-        this.setState(state => ({resetPwdModal: open === null ? !state.resetPwdModal : open}));
+        this.setState(Tools.toggleState(open));
     }
 
     render() {
-        const {resetPwdModal, loginFormState} = this.state;
+        const {modal, formState} = this.state;
         return (
             <>
                 <div className="container">
@@ -75,7 +71,7 @@ export class Login extends React.Component<Props, States> {
                                 <LoginForm
                                     formId="loginForm"
                                     submitTitle="Login"
-                                    state={loginFormState}
+                                    state={formState}
                                     handleSubmit={this.handleSubmit.bind(this)}>
                                     <span className="pointer link" onClick={this.toggleModal.bind(this)}>
                                         Reset password
@@ -85,22 +81,26 @@ export class Login extends React.Component<Props, States> {
                         </div>
                     </div>
                 </div>
-                <DefaultModal
-                    open={resetPwdModal}
-                    title="Reset password"
-                    close={() => this.toggleModal.bind(this)(false)}>
-                    <ResetPwdForm handleSubmit={() => {}}>
-                        <button
-                            type="button"
-                            className="btn btn-warning"
-                            onClick={() => this.toggleModal.bind(this)(false)}>
-                            <span className="fas fa-times" />
-                            Cancel
-                        </button>
-                    </ResetPwdForm>
-                </DefaultModal>
+                <ResetPwdModal open={modal} close={() => this.toggleModal.bind(this)(false)} />
             </>
         );
     }
 }
 export default withRouter(Login);
+
+type ResetPwdModalType = {
+    open: boolean,
+    close: Function
+};
+export const ResetPwdModal = ({open, close}: ResetPwdModalType) => {
+    return (
+        <DefaultModal open={open} title="Reset password" close={close}>
+            <ResetPwdForm handleSubmit={() => {}}>
+                <button type="button" className="btn btn-warning" onClick={close}>
+                    <span className="fas fa-times" />
+                    Cancel
+                </button>
+            </ResetPwdForm>
+        </DefaultModal>
+    );
+};
