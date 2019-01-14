@@ -8,23 +8,21 @@ import DefaultModal from 'src/utils/components/modal/DefaultModal';
 import ResetPwdForm from './forms/ResetPwdForm';
 import type {FormState} from 'src/utils/helpers/Tools';
 
-type Props = {
-    history: Object
-};
-
-type States = {
-    formState: FormState,
-    modal: boolean
-};
-
 export class Service {
-    static async handleSubmitLogin(event: Object) {
+    static async loginReq(event: Object) {
         const params = Tools.formDataToObj(new FormData(event.target));
         const url = '/api/v1/auth';
         return await Tools.apiCall(url, params, 'POST');
     }
 }
 
+type Props = {
+    history: Object
+};
+type States = {
+    formState: FormState,
+    modal: boolean
+};
 export class Login extends React.Component<Props, States> {
     navigateTo: Function;
     state = {
@@ -37,21 +35,21 @@ export class Login extends React.Component<Props, States> {
 
     constructor(props: Props) {
         super(props);
-        this.navigateTo = Tools.navigateTo.bind(undefined, props.history);
+        this.navigateTo = Tools.navigateTo(props.history);
     }
 
     componentDidMount() {
         Tools.getToken() && this.navigateTo();
     }
 
-    async handleSubmit(event: Object) {
-        event.preventDefault();
-        const resp = await Service.handleSubmitLogin(event);
+    async handleSubmit(e: Object) {
+        e.preventDefault();
+        const r = await Service.loginReq(e);
 
-        if (resp.ok) {
-            Tools.setStorage('auth', resp.data) || this.navigateTo();
+        if (r.ok) {
+            Tools.setStorage('auth', r.data) || this.navigateTo();
         } else {
-            this.setState(Tools.setFormErrors(resp.data.errors));
+            this.setState(Tools.setFormErrors(r.data.errors));
         }
     }
 

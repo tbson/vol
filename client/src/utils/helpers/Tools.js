@@ -103,8 +103,8 @@ export default class Tools {
         return data;
     }
 
-    static navigateTo(history: Object, url: string = '/', params: Array<mixed> = []) {
-        return history.push([url, ...params].join('/'));
+    static navigateTo(history: Object) {
+        return (url: string = '/', params: Array<mixed> = []) => history.push([url, ...params].join('/'));
     }
 
     static parseJson(input: any): string {
@@ -293,7 +293,7 @@ export default class Tools {
 
     static logout(history: Object) {
         this.removeStorage('auth');
-        this.navigateTo(history, 'login');
+        this.navigateTo(history)('login');
     }
 
     static popMessage(description: string | Object, type: string = 'success'): void {
