@@ -3,17 +3,17 @@ import React from 'react';
 // $FlowFixMe: do not complain about importing node_modules
 import Fingerprint2 from 'fingerprintjs2';
 // $FlowFixMe: do not complain about importing node_modules
+import camelCase from 'lodash/camelCase';
+// $FlowFixMe: do not complain about importing node_modules
 import kebabCase from 'lodash/kebabCase';
 // $FlowFixMe: do not complain about importing node_modules
-import cloneDeep from 'lodash/cloneDeep';
-// $FlowFixMe: do not complain about importing node_modules
 import isPlainObject from 'lodash/isPlainObject';
+// $FlowFixMe: do not complain about importing node_modules
+import merge from 'lodash/merge';
 // $FlowFixMe: do not complain about importing node_modules
 import {toast} from 'react-toastify';
 // $FlowFixMe: do not complain about importing node_modules
 import 'react-toastify/dist/ReactToastify.css';
-// $FlowFixMe: do not complain about importing node_modules
-import camelCase from 'lodash/camelCase';
 // $FlowFixMe: do not complain about importing node_modules
 import EventEmitter from 'fbemitter';
 
@@ -753,6 +753,6 @@ export default class Tools {
     }
 
     static setFormErrors(errors: Object, key: string = 'formState') {
-        return (state: Object) => ({[key]: {...state[key], errors}});
+        return (state: Object) => ({[key]: {errors: {...state[key].errors, ...errors}}});
     }
 }

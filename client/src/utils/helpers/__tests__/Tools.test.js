@@ -1026,3 +1026,126 @@ describe('parseErrorResponse', () => {
         expect(output).toEqual(eput);
     });
 });
+
+describe('toggleState', () => {
+    describe('null open', () => {
+        test('no key', () => {
+            const eput = {modal: true};
+            const open = null;
+            const key = undefined;
+            const state = {modal: false};
+            const output = Tools.toggleState(open, key)(state);
+            expect(output).toEqual(eput);
+        });
+
+        test('with key', () => {
+            const eput = {hello: false};
+            const open = null;
+            const key = 'hello';
+            const state = {hello: true};
+            const output = Tools.toggleState(open, key)(state);
+            expect(output).toEqual(eput);
+        });
+    });
+
+    describe('not null open', () => {
+        test('no key', () => {
+            const eput = {modal: true};
+            const open = true;
+            const key = undefined;
+            const state = {modal: true};
+            const output = Tools.toggleState(open, key)(state);
+            expect(output).toEqual(eput);
+        });
+
+        test('with key', () => {
+            const eput = {hello: false};
+            const open = false;
+            const key = 'hello';
+            const state = {hello: true};
+            const output = Tools.toggleState(open, key)(state);
+            expect(output).toEqual(eput);
+        });
+    });
+});
+
+describe('setFormErrors', () => {
+    test('with overwrite', () => {
+        const eput = {
+            formState: {
+                errors: {
+                    uid: ['no number'],
+                    email: ['invalid email'],
+                    username: ['too short']
+                }
+            }
+        };
+        const errors = {
+            uid: ['no number'],
+            email: ['invalid email'],
+            username: ['too short']
+        };
+        const key = undefined;
+        const state = {
+            formState: {
+                errors: {
+                    uid: ['too short']
+                }
+            }
+        };
+        const output = Tools.setFormErrors(errors, key)(state);
+        expect(output).toEqual(eput);
+    });
+
+    test('no overwrite', () => {
+        const eput = {
+            formState: {
+                errors: {
+                    uid: ['too short'],
+                    email: ['invalid email'],
+                    username: ['too short']
+                }
+            }
+        };
+        const errors = {
+            email: ['invalid email'],
+            username: ['too short']
+        };
+        const key = undefined;
+        const state = {
+            formState: {
+                errors: {
+                    uid: ['too short']
+                }
+            }
+        };
+        const output = Tools.setFormErrors(errors, key)(state);
+        expect(output).toEqual(eput);
+    });
+
+    test('custom key', () => {
+        const eput = {
+            form1: {
+                errors: {
+                    uid: ['too short'],
+                    email: ['invalid email'],
+                    username: ['too short']
+                }
+            }
+        };
+        const errors = {
+            email: ['invalid email'],
+            username: ['too short']
+        };
+        const key = 'form1';
+        const state = {
+            form1: {
+                errors: {
+                    uid: ['too short']
+                }
+            }
+        };
+        const output = Tools.setFormErrors(errors, key)(state);
+        expect(output).toEqual(eput);
+    });
+});
