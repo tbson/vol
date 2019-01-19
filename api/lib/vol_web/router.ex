@@ -20,5 +20,6 @@ defmodule VolWeb.Router do
     pipe_through([:api, :jwt_authenticated])
 
     resources("/users", UserController, except: [:new, :edit])
+    resources("/variables", VariableController, except: [:new, :edit])
   end
 end
